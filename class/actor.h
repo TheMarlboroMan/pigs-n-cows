@@ -18,18 +18,19 @@ class Actor
 
 	virtual SDL_Rect acc_posicion()const=0;
 
-	
+
 	public:
 
+	virtual ~Actor() {};
 	void mut_x(float v) {x=v;}
 	void mut_y(float v) {y=v;}
-		
+
 	float acc_x() const {return x;}
 	float acc_y() const {return y;}
 	bool es_para_borrar() const {return para_borrar;}
-	
+
 	Actor():x(0.0), y(0.0), para_borrar(false) {}
-	
+
 	void establecer_posicion(float px, float py)
 	{
 		x=px;
@@ -40,7 +41,7 @@ class Actor
 	{
 		turno(delta);
 		para_borrar=evaluar_borrado();
-	}	
+	}
 
 	virtual void aceptar_visitante(Visitante& v) const =0;
 
