@@ -62,4 +62,30 @@ class Fondo:public Representable
 	Fondo():Representable() {}
 };
 
+class Logo:public Representable
+{
+	virtual unsigned int obtener_recurso() const {return 4;}
+	virtual unsigned int obtener_alpha() const {return 255;}
+
+	virtual void configurar_posicion(SDL_Rect& r) const
+	{
+		r.x=260;
+		r.y=200;
+		r.w=300;
+		r.h=200;
+	}
+	
+	virtual void configurar_recorte(SDL_Rect& r) const
+	{
+		r.x=0;
+		r.y=0;
+		r.w=300;
+		r.h=200;
+	}
+
+	public:
+
+	Logo():Representable() {}
+};
+
 #endif

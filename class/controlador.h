@@ -31,7 +31,8 @@ class Controlador
 	Cielo cielo;
 
 	float t;
-	bool pantalla_completa;
+	bool pantalla_completa,
+	intro{true};
 	const std::string app_path;
 
 	enum sonidos
@@ -73,6 +74,7 @@ class Controlador
 		DLibV::Imagen * img=NULL;
 		DLibV::Imagen * img2=NULL;
 		DLibV::Imagen * img3=NULL;
+		DLibV::Imagen * img4=NULL;
 
 		img=new DLibV::Imagen(app_path+"data/img.png");
 		if(DLibV::Gestor_recursos_graficos::insertar(1, img)!=-1)
@@ -90,6 +92,12 @@ class Controlador
 		if(DLibV::Gestor_recursos_graficos::insertar(3, img3)!=-1)
 		{
 			DLibV::Gestor_recursos_graficos::obtener(3)->establecer_transparencia(0, 0, 0);
+		}
+
+		img4=new DLibV::Imagen(app_path+"data/logo.png");
+		if(DLibV::Gestor_recursos_graficos::insertar(4, img4)!=-1)
+		{
+			DLibV::Gestor_recursos_graficos::obtener(4)->establecer_transparencia(r, g, b);
 		}
 
 		cielo.configurar();
@@ -118,6 +126,12 @@ class Controlador
 		Granja g;
 		rep.push_back(&g);
 
+		Logo l;
+		if(intro) {
+
+			rep.push_back(&l);
+		}
+
 		for(const Representable * const r : rep)
 		{
 			alpha=r->obtener_alpha();
@@ -132,8 +146,11 @@ class Controlador
 			rd.volcar(pantalla);
 		}
 
-		apuntador.dibujar(pantalla);
-		marcadores.dibujar(pantalla);
+		if(!intro) {
+	
+			apuntador.dibujar(pantalla);
+			marcadores.dibujar(pantalla);
+		}
 
 		pantalla.flipar();
 	}
@@ -360,16 +377,41 @@ class Controlador
 		control_frames.inicializar();
 
 		inicializar_pantalla();
-		pantalla.establecer_titulo("--== Pigs and Cows friendly Universe ==--");
+		pantalla.establecer_titulo("Pigs and Cows - friendly universe");
 		DLibV::Utilidades_graficas_SDL::mostrar_ocultar_cursor(false);
 		DLibV::Gestor_color::establecer_formato(pantalla.obtener_formato_pixeles());
 
-std::cout<<"resources at "<<app_path<<std::endl;
 		inicializar_recursos_graficos();
 		inicializar_recursos_audio();
 	}
 
-	bool loop()
+	bool intro_loop() {
+
+		float delta=control_frames.obtener_delta();
+		if(delta > Definiciones::MAX_DELTA) delta=Definiciones::MAX_DELTA;
+
+//		paso(delta);
+		representar();
+
+		control_frames.turno();
+		controles_sdl.recoger();
+
+		if(controles_sdl.es_tecla_down(SDLK_SPACE)) {
+
+			intro=false;
+			return true;
+		}
+
+		if(controles_sdl.es_senal_salida() ||
+			controles_sdl.es_tecla_down(SDLK_ESCAPE))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool game_loop()
 	{
 		float delta=control_frames.obtener_delta();
 		if(delta > Definiciones::MAX_DELTA) delta=Definiciones::MAX_DELTA;
@@ -399,12 +441,15 @@ std::cout<<"resources at "<<app_path<<std::endl;
 		{
 			return false;
 		}
-		else
-		{
-			return true;
-		}
+
+		return true;
 	}
 
+	bool loop() {
+
+		return intro ? intro_loop() : game_loop();
+	}
+	
 };
 
 
