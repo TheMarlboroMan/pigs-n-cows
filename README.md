@@ -18,3 +18,7 @@ b)
 - 4 cd into the project root.
 - 5 make
 - 6 ./pigs.out
+
+##Creating the AppImage with linuxdeploy after building:
+
+[path-to-linuxdeploy] --executable ./pigsncows.out --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimage

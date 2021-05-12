@@ -1,0 +1,8 @@
+[Desktop Entry]
+Categories=Utility;
+Icon=pigsncows
+Name=Pigs and Cows
+Type=Application
+Exec=pigsncows.out
+
+Name[en_US]=pigsncows.desktop
