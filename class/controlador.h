@@ -151,6 +151,13 @@ class Controlador
 			apuntador.dibujar(pantalla);
 			marcadores.dibujar(pantalla);
 		}
+		else {
+
+			std::string cadena=" FRIENDLY UNIVERSE\n\nPRESS SPACE TO PLAY";
+			DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
+			txt.establecer_posicion(280, 420);
+			txt.volcar(pantalla);
+		}
 
 		pantalla.flipar();
 	}
