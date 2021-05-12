@@ -25,4 +25,4 @@ Grab linuxdeploy from here, use the architecture you need:
 
 https://github.com/linuxdeploy/linuxdeploy/releases/tag/continuous
 
-[path-to-linuxdeploy] --executable ./pigsncows.out --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimage
+[path-to-linuxdeploy] --executable ./pigsncows --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimage
