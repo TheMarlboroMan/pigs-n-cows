@@ -1,6 +1,6 @@
-all: pigs.out
+all: pigsncows
 
-pigs.out:\
+pigsncows:\
 libDanSDL.a \
 main.cpp \
 class/cielo.h\
@@ -19,4 +19,4 @@ class/mensajes_controlador.h\
 class/representable.h\
 class/visitante.h\
 class/visitante_app.h
-	g++ main.cpp -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. -lDanSDL -lSDL -lSDL_image -lSDL_mixer -o pigs.out
+	g++ main.cpp -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. -lDanSDL -lSDL -lSDL_image -lSDL_mixer -o pigsncows

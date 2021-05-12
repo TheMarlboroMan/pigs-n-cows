@@ -1,0 +1,6 @@
+AppDir
+libDanSDL.a
+motor_sdl/libDanSDL.a
+motor_sdl/objects_motor_sdl
+*.out
+*.AppImage
