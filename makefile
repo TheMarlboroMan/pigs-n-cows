@@ -19,4 +19,4 @@ class/mensajes_controlador.h\
 class/representable.h\
 class/visitante.h\
 class/visitante_app.h
-	g++ main.cpp -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. -lDanSDL -lSDL -lSDL_image -lSDL_mixer -o pigsncows
+	g++ $(BUILDTYPEFLAGS) main.cpp -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. -lDanSDL -lSDL -lSDL_image -lSDL_mixer -o pigsncows

@@ -32,9 +32,10 @@ class Controlador
 
 	float t;
 	bool pantalla_completa;
+	const std::string app_path;
 
 	enum sonidos
-	{	
+	{
 		SND_CERDITO=1,
 		SND_VAQUITA,
 		SND_OVACION,
@@ -48,14 +49,19 @@ class Controlador
 		DLibA::Controlador_audio_SDL::configurar_salidas(2);
 		DLibA::Controlador_audio_SDL::configurar_buffers(8);
 		DLibA::Controlador_audio_SDL::configurar_canales_audio(8);
-	
+
 		controlador_audio=DLibA::Controlador_audio_SDL::obtener();
 		controlador_audio->iniciar();
 
-		DLibA::Gestor_recursos_audio::insertar_sonido(SND_CERDITO, "data/cerdito.ogg");
-		DLibA::Gestor_recursos_audio::insertar_sonido(SND_VAQUITA, "data/vaquita.ogg");
-		DLibA::Gestor_recursos_audio::insertar_sonido(SND_OVACION, "data/ovacion.ogg");
-		DLibA::Gestor_recursos_audio::insertar_sonido(SND_BONUS, "data/item.ogg");
+		std::string pig_snd=app_path+"data/cerdito.ogg";
+		std::string cow_snd=app_path+"data/vaquita.ogg";
+		std::string applause_snd=app_path+"data/ovacion.ogg";
+		std::string item_snd=app_path+"data/item.ogg";
+
+		DLibA::Gestor_recursos_audio::insertar_sonido(SND_CERDITO, pig_snd.c_str());
+		DLibA::Gestor_recursos_audio::insertar_sonido(SND_VAQUITA, cow_snd.c_str());
+		DLibA::Gestor_recursos_audio::insertar_sonido(SND_OVACION, applause_snd.c_str());
+		DLibA::Gestor_recursos_audio::insertar_sonido(SND_BONUS, item_snd.c_str());
 	}
 
 	void inicializar_recursos_graficos()
@@ -68,19 +74,19 @@ class Controlador
 		DLibV::Imagen * img2=NULL;
 		DLibV::Imagen * img3=NULL;
 
-		img=new DLibV::Imagen("data/img.png");
+		img=new DLibV::Imagen(app_path+"data/img.png");
 		if(DLibV::Gestor_recursos_graficos::insertar(1, img)!=-1)
 		{
 			DLibV::Gestor_recursos_graficos::obtener(1)->establecer_transparencia(r, g, b);
 		}
 
-		img2=new DLibV::Imagen("data/fondo.png");
+		img2=new DLibV::Imagen(app_path+"data/fondo.png");
 		if(DLibV::Gestor_recursos_graficos::insertar(2, img2)!=-1)
 		{
 			DLibV::Gestor_recursos_graficos::obtener(2)->establecer_transparencia(r, g, b);
 		}
 
-		img3=new DLibV::Imagen("data/fuente.png");
+		img3=new DLibV::Imagen(app_path+"data/fuente.png");
 		if(DLibV::Gestor_recursos_graficos::insertar(3, img3)!=-1)
 		{
 			DLibV::Gestor_recursos_graficos::obtener(3)->establecer_transparencia(0, 0, 0);
@@ -147,7 +153,7 @@ class Controlador
 			case Mensaje_controlador::T_VAQUITA_TIERRA:
 				nueva_vaquita_tierra(m.x, m.y);
 			break;
-		
+
 			case Mensaje_controlador::T_DEVOLVER_CERDITO:
 				marcadores.devolver_cerdito();
 			break;
@@ -160,7 +166,7 @@ class Controlador
 			{
 				DLibA::Estructura_sonido es(DLibA::Gestor_recursos_audio::obtener_sonido(SND_OVACION));
 				controlador_audio->reproducir_sonido(es);
-			}			
+			}
 			break;
 */
 		}
@@ -175,7 +181,7 @@ class Controlador
 		{
 			nueva_nube();
 			nuevo_bonus();
-			
+
 			t=0.0;
 		}
 
@@ -195,7 +201,7 @@ class Controlador
 			unsigned int puntos_obtenidos=vcol.acc_puntuacion();
 			if(puntos_obtenidos)
 			{
-				
+
 				int id_sonido=SND_BONUS;
 				if(marcadores.sumar_puntuacion(puntos_obtenidos))
 				{
@@ -221,12 +227,12 @@ class Controlador
 		while(ini < fin)
 		{
 			Actor * a=(*ini);
-			
+
 			if(a->es_para_borrar())
 			{
 				delete a;
 				ini=actores.erase(ini);
-				fin=actores.end();				
+				fin=actores.end();
 			}
 			else
 			{
@@ -328,7 +334,7 @@ class Controlador
 	{
 		unsigned int flags_video=SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
 		if(pantalla_completa) flags_video=flags_video | SDL_FULLSCREEN;
-		pantalla.inicializar(Definiciones::W_AREA, Definiciones::H_AREA, 0, flags_video); 
+		pantalla.inicializar(Definiciones::W_AREA, Definiciones::H_AREA, 0, flags_video);
 	}
 
 	void cambiar_pantalla_completa()
@@ -339,7 +345,17 @@ class Controlador
 
 	public:
 
-	Controlador():control_frames(60), t(0.0), pantalla_completa(false)
+	Controlador(
+		const std::string _app_path
+	):
+		control_frames(60),
+		t(0.0),
+		pantalla_completa(false),
+#ifdef AS_APPIMAGE
+		app_path{_app_path+"../share/"}
+#else
+		app_path(_app_path)
+#endif
 	{
 		control_frames.inicializar();
 
@@ -348,12 +364,13 @@ class Controlador
 		DLibV::Utilidades_graficas_SDL::mostrar_ocultar_cursor(false);
 		DLibV::Gestor_color::establecer_formato(pantalla.obtener_formato_pixeles());
 
+std::cout<<"resources at "<<app_path<<std::endl;
 		inicializar_recursos_graficos();
 		inicializar_recursos_audio();
 	}
 
 	bool loop()
-	{	
+	{
 		float delta=control_frames.obtener_delta();
 		if(delta > Definiciones::MAX_DELTA) delta=Definiciones::MAX_DELTA;
 
@@ -363,8 +380,8 @@ class Controlador
 		control_frames.turno();
 		controles_sdl.recoger();
 
-		if(controles_sdl.es_tecla_pulsada(SDLK_SPACE)) apuntador.sumar_fuerza(delta);		
-		else if(controles_sdl.es_tecla_up(SDLK_SPACE)) 
+		if(controles_sdl.es_tecla_pulsada(SDLK_SPACE)) apuntador.sumar_fuerza(delta);
+		else if(controles_sdl.es_tecla_up(SDLK_SPACE))
 		{
 			if(marcadores.hay_animales_disponibles()) nuevo_animal();
 			apuntador.reiniciar_fuerza();
@@ -383,10 +400,10 @@ class Controlador
 			return false;
 		}
 		else
-		{	
+		{
 			return true;
 		}
-	}	
+	}
 
 };
 
