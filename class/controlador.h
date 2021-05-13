@@ -25,14 +25,17 @@ class Controlador
 	DLibA::Cola_sonido cola_sonido;
 
 	std::vector<Actor *> actores;
+	std::vector<Actor *> nubes;
 
 	Marcadores marcadores;
 	Apuntador apuntador;
 	Cielo cielo;
 
+	enum class states{intro, help, game};
+
 	float t;
-	bool pantalla_completa,
-	intro{true};
+	bool pantalla_completa;
+	states state{states::intro};
 	const std::string app_path;
 
 	enum sonidos
@@ -107,33 +110,12 @@ class Controlador
 	{
 		std::vector<const Representable *> rep;
 
-		Fondo f;
-		rep.push_back(&f);
-
-		Visitante_generar_representables vis;
-		for(Actor * a : actores) a->aceptar_visitante(vis);
-		const std::vector<const Representable *> ract=vis.acc_vector_representables();
-		for(const Representable * const r : ract) rep.push_back(r);
-
-		SDL_Rect posicion;
-		SDL_Rect recorte;
-		unsigned int recurso=0;
-		unsigned int alpha=0;
-
+		SDL_Rect posicion, recorte;
+		unsigned int recurso=0, alpha=0;
 		DLibV::Representacion_bitmap_dinamica rd;
-		cielo.dibujar(pantalla);
 
-		Granja g;
-		rep.push_back(&g);
+		auto draw=[&](const Representable * const r) {
 
-		Logo l;
-		if(intro) {
-
-			rep.push_back(&l);
-		}
-
-		for(const Representable * const r : rep)
-		{
 			alpha=r->obtener_alpha();
 			recurso=r->obtener_recurso();
 			r->configurar_posicion(posicion);
@@ -144,19 +126,80 @@ class Controlador
 			rd.establecer_recorte(recorte);
 			rd.establecer_posicion(posicion);
 			rd.volcar(pantalla);
+		};
+
+		cielo.dibujar(pantalla);
+
+		Fondo f;
+		draw(&f);
+
+		Visitante_generar_representables vis;
+
+		for(Actor * a : nubes) {
+			a->aceptar_visitante(vis);
 		}
 
-		if(!intro) {
-	
-			apuntador.dibujar(pantalla);
-			marcadores.dibujar(pantalla);
+		for(Actor * a : actores) {
+			a->aceptar_visitante(vis);
 		}
-		else {
 
-			std::string cadena=" FRIENDLY UNIVERSE\n\nPRESS SPACE TO PLAY";
-			DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
-			txt.establecer_posicion(280, 420);
-			txt.volcar(pantalla);
+		const std::vector<const Representable *> ract=vis.acc_vector_representables();
+		for(const Representable * const r : ract) {
+			rep.push_back(r);
+		}
+
+		switch(state) {
+
+			case states::game: {
+
+				Granja g;
+				draw(&g);
+
+				for(const Representable * const r : rep) {
+					draw(r);
+				}
+
+				apuntador.dibujar(pantalla);
+				marcadores.dibujar(pantalla);
+			}
+			break;
+			case states::intro: {
+
+				for(const Representable * const r : rep) {
+					draw(r);
+				}
+
+				Logo l;
+				draw(&l);
+
+				std::string cadena=" FRIENDLY UNIVERSE\n\nPRESS SPACE TO PLAY\n\n PRESS H FOR HELP";
+				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
+				txt.establecer_posicion(280, 420);
+				txt.volcar(pantalla);
+			}
+			break;
+			case states::help: {
+
+				for(const Representable * const r : rep) {
+					draw(r);
+				}
+
+				std::string cadena=""
+"               HELP:\n\n"
+"  HOLD AND RELEASE SPACE TO LAUNCH\n"
+"       UP-DOWN ARROWS TO AIM\n"
+"LEFT-RIGHT ARROWS TO SWITCH ANIMALS\n"
+"       HIT BALLOONS TO SCORE\n"
+"         PIGS FLY FURTHER\n"
+"       COWS GRANT MORE SCORE\n"
+"ACCUMULATE SCORE TO WIN MORE ANIMALS\n\n"
+"        PRESS ESC TO RETURN";
+
+				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
+				txt.establecer_posicion(120, 200);
+				txt.volcar(pantalla);
+			}
+			break;
 		}
 
 		pantalla.flipar();
@@ -196,17 +239,54 @@ class Controlador
 		}
 	}
 
-	void paso(float delta)
-	{
+	void paso(float delta) 	{
+
 		t+=delta;
 		cielo.turno(delta);
+
+		//Procesar pasos.
+		for(Actor * a : nubes) {
+			a->paso(delta);
+		}
+
+		//Procesar los borrados.
+		{
+			std::vector<Actor *>::iterator ini=nubes.begin(),
+						fin=nubes.end();
+
+			while(ini < fin)
+			{
+				Actor * a=(*ini);
+
+				if(a->es_para_borrar())
+				{
+					delete a;
+					ini=nubes.erase(ini);
+					fin=nubes.end();
+				}
+				else
+				{
+					++ini;
+				}
+			}
+		}
+
 
 		if(t >= 1.000)
 		{
 			nueva_nube();
-			nuevo_bonus();
+
+			if(state==states::game) {
+
+				nuevo_bonus();
+			}
 
 			t=0.0;
+		}
+
+		if(state!=states::game) {
+
+			return;
 		}
 
 		//Procesar pasos.
@@ -338,7 +418,7 @@ class Controlador
 		{
 			Nube * n=new Nube();
 			n->configurar();
-			actores.push_back(n);
+			nubes.push_back(n);
 		}
 	}
 
@@ -365,6 +445,17 @@ class Controlador
 	{
 		pantalla_completa=!pantalla_completa;
 		inicializar_pantalla();
+	}
+
+	void cleanup() {
+
+		for(Actor * a : actores) {
+
+			delete a;
+		}
+
+		actores.clear();
+		marcadores.cleanup();
 	}
 
 	public:
@@ -397,7 +488,7 @@ class Controlador
 		float delta=control_frames.obtener_delta();
 		if(delta > Definiciones::MAX_DELTA) delta=Definiciones::MAX_DELTA;
 
-//		paso(delta);
+		paso(delta);
 		representar();
 
 		control_frames.turno();
@@ -405,7 +496,13 @@ class Controlador
 
 		if(controles_sdl.es_tecla_down(SDLK_SPACE)) {
 
-			intro=false;
+			state=states::game;
+			return true;
+		}
+
+		if(controles_sdl.es_tecla_down(SDLK_h)) {
+
+			state=states::help;
 			return true;
 		}
 
@@ -429,24 +526,75 @@ class Controlador
 		control_frames.turno();
 		controles_sdl.recoger();
 
-		if(controles_sdl.es_tecla_pulsada(SDLK_SPACE)) apuntador.sumar_fuerza(delta);
-		else if(controles_sdl.es_tecla_up(SDLK_SPACE))
-		{
-			if(marcadores.hay_animales_disponibles()) nuevo_animal();
-			apuntador.reiniciar_fuerza();
+		//prevent the same keypress to start the game from triggering a throw.
+		if(!apuntador.is_started()) {
+
+			if(controles_sdl.es_tecla_down(SDLK_SPACE)) {
+
+				apuntador.start();
+			}
+
+		}
+		else {
+
+			if(controles_sdl.es_tecla_pulsada(SDLK_SPACE)) {
+
+				apuntador.sumar_fuerza(delta);
+			}
+			else if(controles_sdl.es_tecla_up(SDLK_SPACE))
+			{
+				if(apuntador.can_throw()) {
+
+					if(marcadores.hay_animales_disponibles()) {
+
+						nuevo_animal();
+						apuntador.reiniciar_fuerza();
+					}
+				}
+			}
 		}
 
 		if(controles_sdl.es_tecla_down(SDLK_f)) cambiar_pantalla_completa();
+
 		if(controles_sdl.es_tecla_pulsada(SDLK_UP)) apuntador.cambiar_angulo(-1, delta);
 		else if(controles_sdl.es_tecla_pulsada(SDLK_DOWN)) apuntador.cambiar_angulo(1, delta);
 
 		if(controles_sdl.es_tecla_down(SDLK_LEFT)) marcadores.cambiar_tipo_animal(-1);
 		else if(controles_sdl.es_tecla_down(SDLK_RIGHT)) marcadores.cambiar_tipo_animal(1);
 
-		if(controles_sdl.es_senal_salida() ||
-			controles_sdl.es_tecla_down(SDLK_ESCAPE))
-		{
+		if(controles_sdl.es_senal_salida()) {
+
 			return false;
+		}
+
+		if(controles_sdl.es_tecla_down(SDLK_ESCAPE)) {
+
+			state=states::intro;
+			cleanup();
+		}
+
+		return true;
+	}
+
+	bool help_loop() {
+
+		float delta=control_frames.obtener_delta();
+		if(delta > Definiciones::MAX_DELTA) delta=Definiciones::MAX_DELTA;
+
+		paso(delta);
+		representar();
+
+		control_frames.turno();
+		controles_sdl.recoger();
+
+		if(controles_sdl.es_senal_salida()) {
+
+			return false;
+		}
+
+		if(controles_sdl.es_tecla_down(SDLK_ESCAPE)) {
+
+			state=states::intro;
 		}
 
 		return true;
@@ -454,7 +602,13 @@ class Controlador
 
 	bool loop() {
 
-		return intro ? intro_loop() : game_loop();
+		switch(state) {
+			case states::intro: return intro_loop();
+			case states::help: return help_loop();
+			case states::game: return game_loop();
+		}
+
+		return false;
 	}
 	
 };

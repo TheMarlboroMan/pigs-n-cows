@@ -41,7 +41,8 @@ class Marcadores
 	unsigned int max_vaquitas;
 	unsigned int max_cerditos;
 
-	unsigned int puntuacion;
+	unsigned int puntuacion,
+				running_score;
 	
 	public:
 
@@ -51,8 +52,20 @@ class Marcadores
 		cerditos(INI_MAX_CERDITOS), 
 		max_vaquitas(INI_MAX_VAQUITAS), 
 		max_cerditos(INI_MAX_CERDITOS),
-		puntuacion(0)
+		puntuacion(0),
+		running_score(0)
 	{}
+
+	void		cleanup() {
+
+		tipo_animal_actual=T_CERDITO;
+		vaquitas=INI_MAX_VAQUITAS;
+		cerditos=INI_MAX_CERDITOS;
+		max_vaquitas=INI_MAX_VAQUITAS;
+		max_cerditos=INI_MAX_CERDITOS;
+		puntuacion=0;
+		running_score=0;
+	}
 
 	unsigned int acc_tipo_animal_actual() {return tipo_animal_actual;}
 //	unsigned int acc_vaquitas() {return vaquitas;}
@@ -93,6 +106,7 @@ class Marcadores
 
 	bool sumar_puntuacion(int c)
 	{
+		running_score+=c;
 		puntuacion+=c;
 		if(puntuacion >= MAX_PUNTUACION)
 		{
@@ -139,7 +153,9 @@ class Marcadores
 		std::string cadena=" X "+
 			DLibH::Herramientas::entero_a_cadena(cantidad)+
 			" / "+
-			DLibH::Herramientas::entero_a_cadena(total);
+			DLibH::Herramientas::entero_a_cadena(total)+
+			" SCORE: "+
+			DLibH::Herramientas::entero_a_cadena(running_score);
 
 		DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
 		txt.establecer_posicion(X_TEXTO, Y_TEXTO);

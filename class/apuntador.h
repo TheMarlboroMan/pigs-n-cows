@@ -22,13 +22,26 @@ class Apuntador
 	float angulo; //En SDL 0 es derecha y 270 es arriba. Aquí lo almacenamos bien, pero
 			//lo transformamos para mostrar.
 	float fuerza;
+	bool started{false};
 
 	public:
 
 	Apuntador():angulo(15.0), fuerza(MIN_FUERZA)
 	{}
 
+	void	cleanup() {
+
+		angulo=15.0;
+		fuerza=MIN_FUERZA;
+		started=false;
+	}
+	
+	void start() {started=true;}
+	bool is_started() const {return started;}
+
 	float acc_fuerza() const {return fuerza;}
+
+	bool can_throw() const {return fuerza != MIN_FUERZA;}
 
 	void reiniciar_fuerza() {fuerza=MIN_FUERZA;}
 
