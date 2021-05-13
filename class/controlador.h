@@ -192,7 +192,8 @@ class Controlador
 "       HIT BALLOONS TO SCORE\n"
 "         PIGS FLY FURTHER\n"
 "       COWS GRANT MORE SCORE\n"
-"ACCUMULATE SCORE TO WIN MORE ANIMALS\n\n"
+"ACCUMULATE SCORE TO WIN MORE ANIMALS\n"
+"      F TO TOGGLE FULLSCREEN\n\n"
 "        PRESS ESC TO RETURN";
 
 				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
@@ -494,6 +495,8 @@ class Controlador
 		control_frames.turno();
 		controles_sdl.recoger();
 
+		if(controles_sdl.es_tecla_down(SDLK_f)) cambiar_pantalla_completa();
+
 		if(controles_sdl.es_tecla_down(SDLK_SPACE)) {
 
 			state=states::game;
@@ -586,6 +589,8 @@ class Controlador
 
 		control_frames.turno();
 		controles_sdl.recoger();
+
+		if(controles_sdl.es_tecla_down(SDLK_f)) cambiar_pantalla_completa();
 
 		if(controles_sdl.es_senal_salida()) {
 
