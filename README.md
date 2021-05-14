@@ -2,11 +2,16 @@
 
 Small children's game done in a morning. It was based around the idea of a casual game where you cannot lose.
 
-# Controls:
+# How to play
 
-- up-down to aim
-- left-right to toggle between pigs and cows (pigs fly further, cows grant more points)
-- hold and release space to launch
+- up-down to aim.
+- left-right to toggle between pigs and cows (pigs fly further, cows grant more points).
+- hold and release space to launch.
+- aim for the incoming ballons.
+- hit more than one ballon with the same animal to rack up combo points.
+- cows grant more points than pigs, but cannot fly as far.
+- fill up the score bar to raise the maximum number of animals.
+- the game never ends, just chill.
 
 ## Building.
 
