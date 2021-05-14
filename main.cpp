@@ -36,7 +36,6 @@ int main(int argc, char ** argv)
 		executable_path=std::string{std::begin(buff), std::begin(buff)+bytes};
 		auto last_slash=executable_path.find_last_of("/");
 		executable_dir=executable_path.substr(0, last_slash)+"/";
-		std::cout<<"running from "<<executable_dir<<std::endl;
 	}
 
 	if(DLibH::Herramientas_SDL::iniciar_SDL(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK))
