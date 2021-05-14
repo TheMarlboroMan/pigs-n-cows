@@ -28,3 +28,8 @@ execute build.sh [regular|appimage]
 3) [path-to-linuxdeploy] --appdir AppDir
 4) Copy the "data" directory and its contents into AppDir/usr/share
 5) [path-to-linuxdeploy] --executable ./pigsncows --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimage
+
+## Changelog
+
+- Somewhere around... the 2000s, the game is done.
+- May 2021, cleanup for appimage, title and help screen added, small improvements.
