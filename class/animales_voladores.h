@@ -75,7 +75,7 @@ class Cerdito:public Animal_volador
 		r.w=W;
 		r.h=H;
 	}
-	
+
 	virtual void configurar_recorte(SDL_Rect& r) const
 	{
 		r.x=RX;
@@ -85,7 +85,7 @@ class Cerdito:public Animal_volador
 	}
 
 	Cerdito():Animal_volador(1){}
-	virtual void aceptar_visitante(Visitante& v) const {v.visitar(*this);}	
+	virtual void aceptar_visitante(Visitante& v) const {v.visitar(*this);}
 	virtual SDL_Rect acc_posicion()const {return DLibH::Herramientas_SDL::nuevo_sdl_rect(acc_x(), acc_y(), W, H);}
 };
 
@@ -115,7 +115,7 @@ class Vaquita:public Animal_volador
 		r.w=W;
 		r.h=H;
 	}
-	
+
 	virtual void configurar_recorte(SDL_Rect& r) const
 	{
 		r.x=RX;
@@ -125,9 +125,9 @@ class Vaquita:public Animal_volador
 	}
 
 	Vaquita():Animal_volador(2){}
-	virtual void aceptar_visitante(Visitante& v) const {v.visitar(*this);}	
+	virtual void aceptar_visitante(Visitante& v) const {v.visitar(*this);}
 	virtual SDL_Rect acc_posicion()const {return DLibH::Herramientas_SDL::nuevo_sdl_rect(acc_x(), acc_y(), W, H);}
-}; 
+};
 
 
 #endif
