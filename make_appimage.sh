@@ -11,5 +11,5 @@ $1 --appdir AppDir
 cp -r data AppDir/usr/share
 mkdir -p AppDir/usr/share/metainfo
 cp linuxdeploy/metainfo.xml AppDir/usr/share/metainfo/myapp.appdata.xml
-$1 --executable ./pigsncows --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimag
+$1 --executable ./pigsncows --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimage
 exit 0
