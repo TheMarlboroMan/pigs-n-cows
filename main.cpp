@@ -11,6 +11,7 @@
 
 #include "class/definiciones.h"
 #include "class/controlador.h"
+#include "class/version.h"
 
 //g++ main.cpp -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. -lDanSDL -lSDL -lSDL_image -lSDL_mixer
 

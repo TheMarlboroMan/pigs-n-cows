@@ -12,6 +12,7 @@
 #include "apuntador.h"
 #include "marcadores.h"
 #include "bonus.h"
+#include "version.h"
 
 
 class Controlador
@@ -176,6 +177,17 @@ class Controlador
 				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
 				txt.establecer_posicion(280, 420);
 				txt.volcar(pantalla);
+
+				std::string version="2014 The Marlboro Man. v"
+					+std::to_string(major_version)
+					+"."
+					+std::to_string(minor_version)
+					+"."
+					+std::to_string(patch_version);
+
+				DLibV::Representacion_texto_auto_estatica vtxt(DLibV::Gestor_recursos_graficos::obtener(3), version);
+				vtxt.establecer_posicion(320, 580);
+				vtxt.volcar(pantalla);
 			}
 			break;
 			case states::help: {

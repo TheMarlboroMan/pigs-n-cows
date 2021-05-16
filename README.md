@@ -16,10 +16,7 @@ You must either do a build to use on the computer you are building or to create 
 
 execute build.sh [regular|appimage]
 
-## Creating the AppImage with linuxdeploy after building:
+## Creating the AppImage with linuxdeploy
 
-1) make sure you ran "build.sh appimage"!!!
-2) Grab linuxdeploy from https://github.com/linuxdeploy/linuxdeploy/releases/tag/continuous use the architecture you need:
-3) [path-to-linuxdeploy] --appdir AppDir
-4) Copy the "data" directory and its contents into AppDir/usr/share
-5) [path-to-linuxdeploy] --executable ./pigsncows --appdir AppDir -i ./linuxdeploy/pigsncows.png -d ./linuxdeploy/pigsncows.desktop --output appimage
+run make_appimage.sh
+
