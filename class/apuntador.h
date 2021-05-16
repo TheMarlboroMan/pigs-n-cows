@@ -35,7 +35,7 @@ class Apuntador
 		fuerza=MIN_FUERZA;
 		started=false;
 	}
-	
+
 	void start() {started=true;}
 	bool is_started() const {return started;}
 
@@ -58,38 +58,30 @@ class Apuntador
 		else if(angulo > MAX_ANGULO) angulo=MAX_ANGULO;
 	}
 
-	void dibujar(DLibV::Pantalla& p)
+	void dibujar(DLibV::Pantalla& p, bool _can_throw)
 	{
-		float t_angulo=angulo-90;
-		float rad=DLibH::Herramientas::grados_a_radianes(t_angulo);
-		float l_fuerza=(MAX_L_FUERZA - fuerza) / 7.0;
-		Uint32 color=DLibV::Gestor_color::color(32, 32, 220);
+		float l_fuerza=(MAX_L_FUERZA - fuerza) / 10.0;
 
-		int x=X+4;
-		int y=Y+4;
+		Sint16 y=_can_throw ? 61 : 69;
+		SDL_Rect posicion{X, Y, 8, 8},
+				recorte{165, y, 8, 8};
 
-		int x2=X+(cos(rad) * l_fuerza);
-		int y2=Y+(sin(rad) * l_fuerza);
+		DLibV::Representacion_bitmap_dinamica rd;
+		rd.establecer_alpha(128);
+		rd.establecer_recurso(DLibV::Gestor_recursos_graficos::obtener(1));
+		rd.establecer_recorte(recorte);
 
-		//Dibujamos la línea principal.
-		DLibV::Primitiva_grafica_linea_estatica l(x, y, x2, y2, color);
-		l.volcar(p);
+		auto radians=DLibH::Herramientas::grados_a_radianes(angulo-90.f);
 
-		//Y ahora las líneas secundarias, que van del centro 90 grados para cada lado.
+		rd.volcar(p);
 
-		rad=DLibH::Herramientas::grados_a_radianes(t_angulo-150);
-		int xflechaizq=x2+(cos(rad) * LONGITUD_PUNTA_FLECHA);
-		int yflechaizq=y2+(sin(rad) * LONGITUD_PUNTA_FLECHA);
+		for(int i=0; i<6; i++) {
 
-		DLibV::Primitiva_grafica_linea_estatica l2(x2, y2, xflechaizq, yflechaizq, color);
-		l2.volcar(p);
-
-		rad=DLibH::Herramientas::grados_a_radianes(t_angulo+150);
-		int xflechader=x2+(cos(rad) * LONGITUD_PUNTA_FLECHA);
-		int yflechader=y2+(sin(rad) * LONGITUD_PUNTA_FLECHA);
-
-		DLibV::Primitiva_grafica_linea_estatica l3(x2, y2, xflechader, yflechader, color);
-		l3.volcar(p);
+			posicion.x+=cos(radians) * l_fuerza;
+			posicion.y+=sin(radians) * l_fuerza;
+			rd.establecer_posicion(posicion);
+			rd.volcar(p);
+		}
 	}
 
 	float acc_angulo() {return angulo;}

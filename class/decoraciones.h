@@ -15,7 +15,7 @@ class Granja:public Representable
 		r.w=90;
 		r.h=50;
 	}
-	
+
 	virtual void configurar_recorte(SDL_Rect& r) const
 	{
 		r.x=29;
@@ -48,7 +48,7 @@ class Fondo:public Representable
 		r.w=W;
 		r.h=H;
 	}
-	
+
 	virtual void configurar_recorte(SDL_Rect& r) const
 	{
 		r.x=0;
@@ -69,12 +69,12 @@ class Logo:public Representable
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{
-		r.x=260;
-		r.y=200;
+		r.x=250;
+		r.y=120;
 		r.w=300;
 		r.h=200;
 	}
-	
+
 	virtual void configurar_recorte(SDL_Rect& r) const
 	{
 		r.x=0;

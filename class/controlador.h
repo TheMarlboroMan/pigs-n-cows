@@ -160,7 +160,7 @@ class Controlador
 					draw(r);
 				}
 
-				apuntador.dibujar(pantalla);
+				apuntador.dibujar(pantalla, marcadores.hay_animales_disponibles());
 				marcadores.dibujar(pantalla);
 			}
 			break;
@@ -175,7 +175,7 @@ class Controlador
 
 				std::string cadena=" FRIENDLY UNIVERSE\n\nPRESS SPACE TO PLAY\n\n PRESS H FOR HELP";
 				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
-				txt.establecer_posicion(280, 420);
+				txt.establecer_posicion(250, 350);
 				txt.volcar(pantalla);
 
 				std::string version="2014 The Marlboro Man. v"
@@ -202,6 +202,7 @@ class Controlador
 "       UP-DOWN ARROWS TO AIM\n"
 "LEFT-RIGHT ARROWS TO SWITCH ANIMALS\n"
 "       HIT BALLOONS TO SCORE\n"
+"CHAIN BALLOONS FOR SCORE MULTIPLIERS\n"
 "         PIGS FLY FURTHER\n"
 "       COWS GRANT MORE SCORE\n"
 "ACCUMULATE SCORE TO WIN MORE ANIMALS\n"
@@ -308,6 +309,7 @@ class Controlador
 		//Procesar las colisiones...
 		Visitante_colisiones vcol;
 		for(Actor * a : actores) a->aceptar_visitante(vcol);
+
 		if(vcol.procesar())
 		{
 			std::vector<const Actor *> para_borrar=vcol.acc_para_borrar();
@@ -563,8 +565,9 @@ class Controlador
 					if(marcadores.hay_animales_disponibles()) {
 
 						nuevo_animal();
-						apuntador.reiniciar_fuerza();
 					}
+
+					apuntador.reiniciar_fuerza();
 				}
 			}
 		}
@@ -627,7 +630,7 @@ class Controlador
 
 		return false;
 	}
-	
+
 };
 
 
