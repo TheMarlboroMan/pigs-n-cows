@@ -6,6 +6,9 @@ then
 	exit 1
 fi;
 
+#export SIGN=1
+#export SIGN_KEY=0xLAST8CHARSOFGPGKEYID
+
 ./build.sh appimage
 $1 --appdir AppDir
 cp -r data AppDir/usr/share
