@@ -4,7 +4,7 @@ all: pigsncows
 #DRIVE=C
 #INCLUDES=/devel/include
 #BUILDTYPEFLAGS=-DWINBUILD=1
-#ARCHLINK=-lmingw32 -lSDL2main
+#ARCHLINK=-lmingw32 -lSDL2main -static-libgcc -static-libstdc++
 #LIB=/devel/lib
 #WINFLAGS=-I$(DRIVE):$(INCLUDES) -L$(DRIVE):$(LIB)
 

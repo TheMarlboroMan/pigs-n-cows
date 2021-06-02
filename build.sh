@@ -32,7 +32,7 @@ fi
 
 mkdir -p objects
 make -f makefile_linux
-cp libDanSDL2legacy.a.a ../
+cp libDanSDL2legacy.a ../
 cd ..
 if [ -f pigsncows ];
 then
