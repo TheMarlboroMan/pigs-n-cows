@@ -1,4 +1,4 @@
-#include <ldv/color.h>
+#include "color.h"
 
 /*! \file color.h
     \brief Color conversion functions.
