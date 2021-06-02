@@ -1,4 +1,5 @@
 #include "herramientas.h"
+#include <cmath>
 
 using namespace DLibH;
 

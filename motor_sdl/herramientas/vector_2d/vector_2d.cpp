@@ -1,5 +1,6 @@
 #include "vector_2d.h"
 #include "../herramientas/herramientas.h"
+#include <cmath>
 
 using namespace DLibH;
 
