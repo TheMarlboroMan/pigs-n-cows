@@ -15,8 +15,6 @@ Small children's game done in a morning. It was based around the idea of a casua
 
 ## Building.
 
-This thing depends on a very old libdanSDL for SDL1.2. Fortunately I could dig it up from my mailbox and patch it with a few missing features.
-
 You must either do a build to use on the computer you are building or to create an AppImage from the build (the appimage has a particular path for the resources).
 
 execute build.sh [regular|appimage]
@@ -29,3 +27,4 @@ run make_appimage.sh
 
 - Somewhere around... the 2000s, the game is done.
 - May 2021, cleanup for appimage, title and help screen added, small improvements.
+- Jun 2021, ported to SDL2.

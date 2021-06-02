@@ -6,8 +6,8 @@
 #include <array>
 #include <string>
 
-#include "motor_sdl/libDanSDL.h"
-#include "motor_sdl/defDanSDL.h"
+#include "libdan2/libDan2.h"
+#include "libdan2/defDanSDL.h"
 
 #include "class/definiciones.h"
 #include "class/controlador.h"
@@ -32,13 +32,15 @@ int main(int argc, char ** argv) {
 
 	try {
 
-		if(DLibH::Herramientas_SDL::iniciar_SDL(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK))
-		{
-			srand(time(NULL));
-			const std::string executable_dir=ready_system();
-			Controlador c{executable_dir};
-			while(c.loop()){}
+		if(!DLibH::Herramientas_SDL::iniciar_SDL(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK)) {
+		
+			throw std::runtime_error("cannot start SDL");
 		}
+		
+		srand(time(NULL));
+		const std::string executable_dir=ready_system();
+		Controlador c{executable_dir};
+		while(c.loop()){}
 	
 		DLibH::Log_motor::finalizar();
 		DLibH::Herramientas_SDL::apagar_SDL();

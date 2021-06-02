@@ -19,26 +19,26 @@ class Cielo
 	static const int SEGUNDOS_PARTE_DIA=20;
 	static const unsigned int MAX_ESTRELLAS=60;
 
-	Uint32 COLOR_AMANECER;
-	Uint32 COLOR_MEDIODIA;
-	Uint32 COLOR_ATARDECER;
-	Uint32 COLOR_NOCHE;
-	Uint32 COLOR_ESTRELLA;
+	ldv::rgb_color COLOR_AMANECER;
+	ldv::rgb_color COLOR_MEDIODIA;
+	ldv::rgb_color COLOR_ATARDECER;
+	ldv::rgb_color COLOR_NOCHE;
+	ldv::rgb_color COLOR_ESTRELLA;
 
 	float t;
-	Uint32 color_actual;
-	Uint32 color_transicion;
+	ldv::rgb_color color_actual;
+	ldv::rgb_color color_transicion;
 	unsigned int momento;
 	bool en_transicion;
 	std::vector<Estrella> estrellas;
 
 	void definir_colores()
 	{
-		COLOR_AMANECER=DLibV::Gestor_color::color(0, 172, 186);
-		COLOR_MEDIODIA=DLibV::Gestor_color::color(0, 211, 228);
-		COLOR_ATARDECER=DLibV::Gestor_color::color(248, 147, 28);
-		COLOR_NOCHE=DLibV::Gestor_color::color(8, 24, 74);
-		COLOR_ESTRELLA=DLibV::Gestor_color::color(192, 192, 192);
+		COLOR_AMANECER=ldv::rgb8(0, 172, 186);
+		COLOR_MEDIODIA=ldv::rgb8(0, 211, 228);
+		COLOR_ATARDECER=ldv::rgb8(248, 147, 28);
+		COLOR_NOCHE=ldv::rgb8(8, 24, 74);
+		COLOR_ESTRELLA=ldv::rgb8(192, 192, 192);
 	}
 
 	void transicion_colores()
@@ -49,7 +49,7 @@ class Cielo
 		}
 		else
 		{
-			auto trans=[](Uint8& co, Uint8 cd)
+			auto trans=[](int& co, int cd)
 			{
 				if(co != cd)
 				{
@@ -58,21 +58,28 @@ class Cielo
 				}
 			};
 
-			Uint8 	ra=0, ga=0, ba=0, 
-				rd=0, gd=0, bd=0;
+//			Uint8 	ra=0, ga=0, ba=0, 
+//				rd=0, gd=0, bd=0;
 
-			SDL_GetRGB(color_transicion, DLibV::Gestor_color::obtener_formato(), &ra, &ga, &ba);
-			SDL_GetRGB(color_actual, DLibV::Gestor_color::obtener_formato(), &rd, &gd, &bd);
+//			SDL_GetRGB(color_transicion, DLibV::Gestor_color::obtener_formato(), &ra, &ga, &ba);
+//			SDL_GetRGB(color_actual, DLibV::Gestor_color::obtener_formato(), &rd, &gd, &bd);
+
+			int ra=ldv::colorif(color_transicion.r), 
+				ga=ldv::colorif(color_transicion.g), 
+				ba=ldv::colorif(color_transicion.b), 
+				rd=ldv::colorif(color_actual.r), 
+				gd=ldv::colorif(color_actual.g), 
+				bd=ldv::colorif(color_actual.b);
 
 			trans(ra, rd);
 			trans(ga, gd);
 			trans(ba, bd);
 
-			color_transicion=DLibV::Gestor_color::color(ra, ga, ba);
+			color_transicion=ldv::rgb8(ra, ga, ba);
 		}
 	}
 	
-	void disminuir_colores(Uint8& r, Uint8& g, Uint8& b)
+	void disminuir_colores(int& r, int& g, int& b)
 	{
 		if(r <= FACTOR_DISMINUIR_COLOR) r=0;
 		else r-=FACTOR_DISMINUIR_COLOR;
@@ -86,8 +93,17 @@ class Cielo
 
 	public:
 
-	Cielo():COLOR_AMANECER(0), COLOR_MEDIODIA(0), COLOR_ATARDECER(0), COLOR_NOCHE(0), COLOR_ESTRELLA(0),
-	t(0), color_actual(0), color_transicion(0), momento(M_AMANECER), en_transicion(false)
+	Cielo():
+		COLOR_AMANECER(ldv::rgb8(0,0,0)), 
+		COLOR_MEDIODIA(ldv::rgb8(0,0,0)), 
+		COLOR_ATARDECER(ldv::rgb8(0,0,0)), 
+		COLOR_NOCHE(ldv::rgb8(0,0,0)), 
+		COLOR_ESTRELLA(ldv::rgb8(0,0,0)),
+		t(0),
+		color_actual(ldv::rgb8(0,0,0)), 
+		color_transicion(ldv::rgb8(0,0,0)), 
+		momento(M_AMANECER), 
+		en_transicion(false)
 	{}
 
 	void configurar()
@@ -108,30 +124,50 @@ class Cielo
 
 	void dibujar(DLibV::Pantalla& p)
 	{
-		unsigned int h_franja=Definiciones::H_AREA / FRANJAS;
-		unsigned int y=0, i=0;
-		Uint8 r=0, g=0, b=0;
-		Uint32 color=en_transicion ? color_transicion : color_actual;
-		SDL_GetRGB(color, DLibV::Gestor_color::obtener_formato(), &r, &g, &b);
+		int h_franja=Definiciones::H_AREA / FRANJAS;
+		int y=0, i=0;
+		int r=0, g=0, b=0;
+		auto color=en_transicion ? color_transicion : color_actual;
+		r=ldv::colorif(color.r);
+		g=ldv::colorif(color.g);
+		b=ldv::colorif(color.b);
 
-		while(i < FRANJAS)
-		{
-			p.rellenar(r, g, b, 0, y, Definiciones::W_AREA, h_franja);
+		while((unsigned)i < FRANJAS) {
+		
+			DLibV::Representacion_primitiva_caja_estatica box(
+				{0, y, Definiciones::W_AREA, h_franja},
+				r, g, b
+			);
+		
+			box.volcar(p);
+			
 			disminuir_colores(r, g, b);
 			y+=h_franja;
 			++i;
 		}
 
-		if(momento==M_NOCHE)
-		{
+		if(momento==M_NOCHE) {
+		
 			dibujar_estrellas(p);
 		}
 	}
 
 	void dibujar_estrellas(DLibV::Pantalla& p)
 	{
-		for(Estrella& e : estrellas)
-			DLibV::Utilidades_graficas_SDL::SDL_PutPixel(p.acc_superficie(), e.x, e.y, COLOR_ESTRELLA);
+		
+		auto r=ldv::colorif(COLOR_ESTRELLA.r),
+		g=ldv::colorif(COLOR_ESTRELLA.g),
+		b=ldv::colorif(COLOR_ESTRELLA.b);
+		
+		for(Estrella& e : estrellas) {
+		
+			DLibV::Representacion_primitiva_caja_estatica box(
+				{(int)e.x, (int)e.y, 1, 1},
+				r, g, b
+			);
+		
+			box.volcar(p);		
+		}
 	}
 
 	void turno(float delta)

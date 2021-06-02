@@ -75,34 +75,45 @@ class Controlador
 		unsigned int g=255;
 		unsigned int b=255;
 
-		DLibV::Imagen * img=NULL;
-		DLibV::Imagen * img2=NULL;
-		DLibV::Imagen * img3=NULL;
-		DLibV::Imagen * img4=NULL;
+		auto load_texture=[&](const std::string _path, int _id, int r, int g, int b) {
+		
+			SDL_Surface * superficie=DLibV::Utilidades_graficas_SDL::cargar_imagen(_path.c_str(), nullptr);
 
-		img=new DLibV::Imagen(app_path+"data/img.png");
-		if(DLibV::Gestor_recursos_graficos::insertar(1, img)!=-1)
-		{
-			DLibV::Gestor_recursos_graficos::obtener(1)->establecer_transparencia(r, g, b);
-		}
+			if(!superficie) {			
+				throw std::runtime_error("could not load image path");
+			}
+			
+			SDL_SetColorKey(superficie, SDL_TRUE, SDL_MapRGB(superficie->format, r, g, b));
+			DLibV::Textura * t=new DLibV::Textura(pantalla.acc_renderer(), superficie);
 
-		img2=new DLibV::Imagen(app_path+"data/fondo.png");
-		if(DLibV::Gestor_recursos_graficos::insertar(2, img2)!=-1)
-		{
-			DLibV::Gestor_recursos_graficos::obtener(2)->establecer_transparencia(r, g, b);
-		}
+			if(DLibV::Gestor_texturas::insertar(_id, t)==-1) {
+			
+				throw std::runtime_error("could not upload texture");				
+			}
+		};
+		
+		auto load_surface=[&](const std::string _path, int _id, int r, int g, int b) {
+		
+			//SDL_Surface * superficie=DLibV::Utilidades_graficas_SDL::cargar_imagen(ruta.c_str(), pantalla.acc_ventana());
+			SDL_Surface * superficie=DLibV::Utilidades_graficas_SDL::cargar_imagen(_path.c_str(), nullptr);
 
-		img3=new DLibV::Imagen(app_path+"data/fuente.png");
-		if(DLibV::Gestor_recursos_graficos::insertar(3, img3)!=-1)
-		{
-			DLibV::Gestor_recursos_graficos::obtener(3)->establecer_transparencia(0, 0, 0);
-		}
+			if(!superficie) {
+				throw std::runtime_error("could not load image path for surface");			
+			}
+			
+			SDL_SetColorKey(superficie, SDL_TRUE, SDL_MapRGB(superficie->format, r, g, b));
+			DLibV::Imagen * t=new DLibV::Imagen(superficie);
 
-		img4=new DLibV::Imagen(app_path+"data/logo.png");
-		if(DLibV::Gestor_recursos_graficos::insertar(4, img4)!=-1)
-		{
-			DLibV::Gestor_recursos_graficos::obtener(4)->establecer_transparencia(r, g, b);
-		}
+			if(DLibV::Gestor_superficies::insertar(_id, t)==-1) {
+			
+				throw std::runtime_error("could not upload surface");
+			}
+		};
+		
+		load_texture(app_path+"data/img.png", 1, r, g, b);
+		load_texture(app_path+"data/fondo.png", 2, r, g, b);		
+		load_texture(app_path+"data/logo.png", 4, r, g, b);
+		load_surface(app_path+"data/fuente.png", 3, 0, 0, 0);		
 
 		cielo.configurar();
 	}
@@ -112,18 +123,16 @@ class Controlador
 		std::vector<const Representable *> rep;
 
 		SDL_Rect posicion, recorte;
-		unsigned int recurso=0, alpha=0;
 		DLibV::Representacion_bitmap_dinamica rd;
 
 		auto draw=[&](const Representable * const r) {
 
-			alpha=r->obtener_alpha();
-			recurso=r->obtener_recurso();
 			r->configurar_posicion(posicion);
 			r->configurar_recorte(recorte);
 
-			rd.establecer_alpha(alpha);
-			rd.establecer_recurso(DLibV::Gestor_recursos_graficos::obtener(recurso));
+			rd.establecer_textura(DLibV::Gestor_texturas::obtener(r->obtener_recurso()));
+			rd.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
+			rd.establecer_alpha(r->obtener_alpha());
 			rd.establecer_recorte(recorte);
 			rd.establecer_posicion(posicion);
 			rd.volcar(pantalla);
@@ -173,8 +182,12 @@ class Controlador
 				Logo l;
 				draw(&l);
 
-				std::string cadena=" FRIENDLY UNIVERSE\n\nPRESS SPACE TO PLAY\n\n PRESS H FOR HELP";
-				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
+				std::string cadena=" FRIENDLY UNIVERSE\n\n\nPRESS SPACE TO PLAY\n\n PRESS H FOR HELP";
+				DLibV::Representacion_texto_auto_estatica txt(
+					pantalla.acc_renderer(),
+					DLibV::Gestor_superficies::obtener(3), 
+					cadena
+				);
 				txt.establecer_posicion(250, 350);
 				txt.volcar(pantalla);
 
@@ -185,7 +198,12 @@ class Controlador
 					+"."
 					+std::to_string(patch_version);
 
-				DLibV::Representacion_texto_auto_estatica vtxt(DLibV::Gestor_recursos_graficos::obtener(3), version);
+				DLibV::Representacion_texto_auto_estatica vtxt(
+					pantalla.acc_renderer(),
+					DLibV::Gestor_superficies::obtener(3), 
+					version
+				);
+				
 				vtxt.establecer_posicion(320, 580);
 				vtxt.volcar(pantalla);
 			}
@@ -209,14 +227,18 @@ class Controlador
 "      F TO TOGGLE FULLSCREEN\n\n"
 "        PRESS ESC TO RETURN";
 
-				DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
+				DLibV::Representacion_texto_auto_estatica txt(
+					pantalla.acc_renderer(),
+					DLibV::Gestor_superficies::obtener(3), 
+					cadena
+				);
 				txt.establecer_posicion(120, 200);
 				txt.volcar(pantalla);
 			}
 			break;
 		}
 
-		pantalla.flipar();
+		pantalla.actualizar();
 	}
 
 	void interpretar_mensaje(const Mensaje_controlador& m)
@@ -451,9 +473,11 @@ class Controlador
 
 	void inicializar_pantalla()
 	{
-		unsigned int flags_video=SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
-		if(pantalla_completa) flags_video=flags_video | SDL_FULLSCREEN;
-		pantalla.inicializar(Definiciones::W_AREA, Definiciones::H_AREA, 0, flags_video);
+		pantalla.inicializar(Definiciones::W_AREA, Definiciones::H_AREA);
+		if(pantalla_completa) {
+		
+			pantalla.establecer_modo_ventana(DLibV::Pantalla::M_PANTALLA_COMPLETA_SIMULADA);
+		}
 	}
 
 	void cambiar_pantalla_completa()
@@ -488,7 +512,6 @@ class Controlador
 		inicializar_pantalla();
 		pantalla.establecer_titulo("Pigs and Cows - friendly universe");
 		DLibV::Utilidades_graficas_SDL::mostrar_ocultar_cursor(false);
-		DLibV::Gestor_color::establecer_formato(pantalla.obtener_formato_pixeles());
 
 		inicializar_recursos_graficos();
 		inicializar_recursos_audio();
@@ -505,22 +528,22 @@ class Controlador
 		control_frames.turno();
 		controles_sdl.recoger();
 
-		if(controles_sdl.es_tecla_down(SDLK_f)) cambiar_pantalla_completa();
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_F)) cambiar_pantalla_completa();
 
-		if(controles_sdl.es_tecla_down(SDLK_SPACE)) {
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_SPACE)) {
 
 			state=states::game;
 			return true;
 		}
 
-		if(controles_sdl.es_tecla_down(SDLK_h)) {
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_H)) {
 
 			state=states::help;
 			return true;
 		}
 
 		if(controles_sdl.es_senal_salida() ||
-			controles_sdl.es_tecla_down(SDLK_ESCAPE))
+			controles_sdl.es_tecla_down(SDL_SCANCODE_ESCAPE))
 		{
 			return false;
 		}
@@ -542,7 +565,7 @@ class Controlador
 		//prevent the same keypress to start the game from triggering a throw.
 		if(!apuntador.is_started()) {
 
-			if(controles_sdl.es_tecla_down(SDLK_SPACE)) {
+			if(controles_sdl.es_tecla_down(SDL_SCANCODE_SPACE)) {
 
 				apuntador.start();
 			}
@@ -550,11 +573,11 @@ class Controlador
 		}
 		else {
 
-			if(controles_sdl.es_tecla_pulsada(SDLK_SPACE)) {
+			if(controles_sdl.es_tecla_pulsada(SDL_SCANCODE_SPACE)) {
 
 				apuntador.sumar_fuerza(delta);
 			}
-			else if(controles_sdl.es_tecla_up(SDLK_SPACE))
+			else if(controles_sdl.es_tecla_up(SDL_SCANCODE_SPACE))
 			{
 				if(apuntador.can_throw()) {
 
@@ -568,20 +591,20 @@ class Controlador
 			}
 		}
 
-		if(controles_sdl.es_tecla_down(SDLK_f)) cambiar_pantalla_completa();
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_F)) cambiar_pantalla_completa();
 
-		if(controles_sdl.es_tecla_pulsada(SDLK_UP)) apuntador.cambiar_angulo(-1, delta);
-		else if(controles_sdl.es_tecla_pulsada(SDLK_DOWN)) apuntador.cambiar_angulo(1, delta);
+		if(controles_sdl.es_tecla_pulsada(SDL_SCANCODE_UP)) apuntador.cambiar_angulo(-1, delta);
+		else if(controles_sdl.es_tecla_pulsada(SDL_SCANCODE_DOWN)) apuntador.cambiar_angulo(1, delta);
 
-		if(controles_sdl.es_tecla_down(SDLK_LEFT)) marcadores.cambiar_tipo_animal(-1);
-		else if(controles_sdl.es_tecla_down(SDLK_RIGHT)) marcadores.cambiar_tipo_animal(1);
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_LEFT)) marcadores.cambiar_tipo_animal(-1);
+		else if(controles_sdl.es_tecla_down(SDL_SCANCODE_RIGHT)) marcadores.cambiar_tipo_animal(1);
 
 		if(controles_sdl.es_senal_salida()) {
 
 			return false;
 		}
 
-		if(controles_sdl.es_tecla_down(SDLK_ESCAPE)) {
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_ESCAPE)) {
 
 			state=states::intro;
 			cleanup();
@@ -601,14 +624,14 @@ class Controlador
 		control_frames.turno();
 		controles_sdl.recoger();
 
-		if(controles_sdl.es_tecla_down(SDLK_f)) cambiar_pantalla_completa();
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_F)) cambiar_pantalla_completa();
 
 		if(controles_sdl.es_senal_salida()) {
 
 			return false;
 		}
 
-		if(controles_sdl.es_tecla_down(SDLK_ESCAPE)) {
+		if(controles_sdl.es_tecla_down(SDL_SCANCODE_ESCAPE)) {
 
 			state=states::intro;
 		}

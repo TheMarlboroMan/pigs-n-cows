@@ -27,7 +27,7 @@ class Nube:public Actor_movil, public Representable
 	int h;
 
 	virtual unsigned int obtener_recurso() const {return 1;}
-	virtual unsigned int obtener_alpha() const {return 128;}
+	virtual Uint8 obtener_alpha() const {return 128;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{
@@ -93,7 +93,7 @@ class Arco_iris:public Actor, public Representable
 	public:
 
 	virtual unsigned int obtener_recurso() const {return 1;}
-	virtual unsigned int obtener_alpha() const {return 32;}
+	virtual Uint8 obtener_alpha() const {return 3;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{

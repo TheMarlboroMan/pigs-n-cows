@@ -50,7 +50,7 @@ class Cerdito_tierra:public Animal_tierra
 	public:
 
 	virtual unsigned int obtener_recurso() const {return 1;}
-	virtual unsigned int obtener_alpha() const {return 255;}
+	virtual Uint8 obtener_alpha() const {return 255;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{
@@ -89,7 +89,7 @@ class Vaquita_tierra:public Animal_tierra
 	public:
 
 	virtual unsigned int obtener_recurso() const {return 1;}
-	virtual unsigned int obtener_alpha() const {return 255;}
+	virtual Uint8 obtener_alpha() const {return 255;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{

@@ -1,0 +1,6 @@
+CFLAGS=-DWINCOMPIL=1 -c -Wno-deprecated -Wall -pedantic -std=c++11
+CC=g++
+UNIDAD_DISCO=C
+LIMPIAR=del objects\*; del libDanSDL2.a;
+INCLUDES=-I$(UNIDAD_DISCO):/mingw_dev/include
+include makefile_comun

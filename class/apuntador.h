@@ -67,8 +67,9 @@ class Apuntador
 				recorte{165, y, 8, 8};
 
 		DLibV::Representacion_bitmap_dinamica rd;
+		rd.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
 		rd.establecer_alpha(128);
-		rd.establecer_recurso(DLibV::Gestor_recursos_graficos::obtener(1));
+		rd.establecer_textura(DLibV::Gestor_texturas::obtener(1));
 		rd.establecer_recorte(recorte);
 
 		auto radians=DLibH::Herramientas::grados_a_radianes(angulo-90.f);

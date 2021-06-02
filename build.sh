@@ -19,20 +19,20 @@ case $1 in
 	;;
 esac
 
-cd motor_sdl;
-if [ -d objects_motor_sdl ]
+cd libdan2;
+if [ -d objects ]
 then
-	rm -rf objects_motor_sdl;
+	rm -rf objects;
 fi
 
-if [ -f libDanSDL.a ]
+if [ -f libDanSDL2legacy.a.a ]
 then
-	rm libDanSDL.a
+	rm libDanSDL2legacy.a.a
 fi
 
-mkdir -p objects_motor_sdl
-make -f makefile_motor_sdl
-cp libDanSDL.a ../
+mkdir -p objects
+make -f makefile_linux
+cp libDanSDL2legacy.a.a ../
 cd ..
 if [ -f pigsncows ];
 then

@@ -6,7 +6,7 @@
 class Granja:public Representable
 {
 	virtual unsigned int obtener_recurso() const {return 1;}
-	virtual unsigned int obtener_alpha() const {return 255;}
+	virtual Uint8 obtener_alpha() const {return 255;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{
@@ -38,7 +38,7 @@ class Fondo:public Representable
 
 	public:
 
-	virtual unsigned int obtener_alpha() const {return 255;}
+	virtual Uint8 obtener_alpha() const {return 255;}
 	virtual unsigned int obtener_recurso() const {return 2;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
@@ -65,7 +65,7 @@ class Fondo:public Representable
 class Logo:public Representable
 {
 	virtual unsigned int obtener_recurso() const {return 4;}
-	virtual unsigned int obtener_alpha() const {return 255;}
+	virtual Uint8 obtener_alpha() const {return 255;}
 
 	virtual void configurar_posicion(SDL_Rect& r) const
 	{

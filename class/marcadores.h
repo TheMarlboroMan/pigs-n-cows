@@ -1,6 +1,8 @@
 #ifndef MARCADORES_H
 #define MARCADORES_H
 
+#include <sstream>
+
 class Marcadores
 {
 	public:
@@ -145,24 +147,32 @@ class Marcadores
 		}
 
 		DLibV::Representacion_bitmap_dinamica rd;	
-		rd.establecer_recurso(DLibV::Gestor_recursos_graficos::obtener(1));
+		rd.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
+		rd.establecer_textura(DLibV::Gestor_texturas::obtener(1));
 		rd.establecer_recorte(x, y, W_SIMBOLO, H_SIMBOLO);
 		rd.establecer_posicion(X_SIMBOLO, Y_SIMBOLO, W_SIMBOLO, H_SIMBOLO);
 		rd.volcar(pantalla);
 
-		std::string cadena=" X "+
-			DLibH::Herramientas::entero_a_cadena(cantidad)+
-			" / "+
-			DLibH::Herramientas::entero_a_cadena(total)+
-			" SCORE: "+
-			DLibH::Herramientas::entero_a_cadena(running_score);
+		std::stringstream ss;
 
-		DLibV::Representacion_texto_auto_estatica txt(DLibV::Gestor_recursos_graficos::obtener(3), cadena);
+		ss<<" X "
+			<<cantidad
+			<<" / "
+			<<total
+			<<" SCORE: "
+			<<running_score;
+
+		DLibV::Representacion_texto_auto_estatica txt(
+			pantalla.acc_renderer(),
+			DLibV::Gestor_superficies::obtener(3), 
+			ss.str()
+		);
 		txt.establecer_posicion(X_TEXTO, Y_TEXTO);
 		txt.volcar(pantalla);
 
 		SDL_Rect rect=DLibH::Herramientas_SDL::nuevo_sdl_rect(X_CAJA, Y_CAJA, W_CAJA, H_CAJA);
-		DLibV::Primitiva_grafica_caja_estatica caja=DLibV::Primitiva_grafica_caja_estatica(rect, DLibV::Gestor_color::color(255, 255, 255));
+		DLibV::Representacion_primitiva_caja_estatica caja(rect, 255, 255, 255);
+		caja.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
 		caja.establecer_alpha(128);
 		caja.volcar(pantalla);
 	
@@ -170,7 +180,8 @@ class Marcadores
 		{
 			int y_puntos=Y_CAJA+H_CAJA-puntuacion-1;
 			rect=DLibH::Herramientas_SDL::nuevo_sdl_rect(X_CAJA+1, y_puntos, W_CAJA-2, puntuacion);
-			DLibV::Primitiva_grafica_caja_estatica caja2=DLibV::Primitiva_grafica_caja_estatica(rect, DLibV::Gestor_color::color(220, 155, 2));
+			DLibV::Representacion_primitiva_caja_estatica caja2(rect, 220, 155, 2);
+			caja2.establecer_modo_blend(DLibV::Representacion::BLEND_ALPHA);
 			caja2.establecer_alpha(128);
 			caja2.volcar(pantalla);
 		}
