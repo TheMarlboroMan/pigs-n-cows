@@ -481,11 +481,7 @@ class Controlador
 		control_frames(60),
 		t(0.0),
 		pantalla_completa(false),
-#ifdef AS_APPIMAGE
-		app_path{_app_path+"../share/"}
-#else
 		app_path(_app_path)
-#endif
 	{
 		control_frames.inicializar();
 
