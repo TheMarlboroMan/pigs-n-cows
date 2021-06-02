@@ -88,7 +88,7 @@ std::string ready_system() {
 	executable_dir=executable_path.substr(0, last_slash)+"/";
 
 	#ifdef AS_APPIMAGE
-		executable_dir=executable_dir+"../share/"}
+		executable_dir=executable_dir+"../share/";
 	#endif		
 		
 	return executable_dir;
