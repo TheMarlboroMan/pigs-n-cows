@@ -1,5 +1,13 @@
 all: pigsncows
 
+#windows builds...
+#DRIVE=C
+#INCLUDES=-I$(DRIVE):/devel/include
+#BUILDTYPEFLAGS=-DWINBUILD=1
+#ARCHLINK=-lmingw32 -lSDL2main
+#LIB=/devel/lib
+#WINFLAGS=-I$(DRIVE):$(INCLUDES) -L$(DRIVE):$(LIB)
+
 pigsncows:\
 libDanSDL.a \
 main.cpp \
@@ -19,4 +27,4 @@ class/mensajes_controlador.h\
 class/representable.h\
 class/visitante.h\
 class/visitante_app.h
-	g++ $(BUILDTYPEFLAGS) main.cpp -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. -lDanSDL -lSDL -lSDL_image -lSDL_mixer -o pigsncows
+	g++ $(BUILDTYPEFLAGS) $(WINFLAGS) main.cpp -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x -L. $(ARCHLINK) -lDanSDL -lSDL -lSDL_image -lSDL_mixer -o pigsncows

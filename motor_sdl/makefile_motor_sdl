@@ -1,5 +1,10 @@
 #CFLAGS=-c -g -O0 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x
 #-DLOG_BASE_SILENCIOSO=1
+
+#for windows stuff...
+#DRIVE=C
+#INCLUDES=-I$(DRIVE):/devel/include
+
 CFLAGS=-c -O3 -Wno-deprecated -Wall -ansi -pedantic -std=c++0x
 #CFLAGS=-c -g -O0 -Wno-deprecated -Wall -ansi -pedantic
 #CFLAGS=-c -Wno-deprecated -Wall -ansi -pedantic
