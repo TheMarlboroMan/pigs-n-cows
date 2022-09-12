@@ -19,6 +19,8 @@ You must either do a build to use on the computer you are building or to create 
 
 execute build.sh [regular|appimage]
 
+The build system is far from perfect and may give you some headaches. If you just want to play, consider getting a pre-made package from the releases page on this project on github. I should be also be on itch.io and gamejolt.com.
+
 ## Creating the AppImage with linuxdeploy
 
 run make_appimage.sh
@@ -28,3 +30,4 @@ run make_appimage.sh
 - Somewhere around... the 2000s, the game is done.
 - May 2021, cleanup for appimage, title and help screen added, small improvements.
 - Jun 2021, ported to SDL2.
+- Sep 2022, licensing and archiving
